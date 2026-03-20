@@ -87,6 +87,7 @@ export class Player {
         this.radioFetchPromise = null;
 
         this.playbackSequence = 0;
+        this.playbackAbortController = null;
 
         window.addEventListener('beforeunload', () => {
             this.saveQueueState();
@@ -592,6 +593,10 @@ export class Player {
             this.isFallbackRetry = false;
         }
 
+        if (this.playbackAbortController) this.playbackAbortController.abort();
+        this.playbackAbortController = new AbortController();
+        const playbackSignal = this.playbackAbortController.signal;
+
         const currentSequence = ++this.playbackSequence;
         const currentQueue = this.shuffleActive ? this.shuffledQueue : this.queue;
         if (this.currentQueueIndex < 0 || this.currentQueueIndex >= currentQueue.length) {
@@ -837,11 +842,11 @@ export class Player {
                     if (this.preloadCache.has(track.id)) {
                         streamUrl = this.preloadCache.get(track.id);
                     } else {
-                        streamUrl = await this.api.getStreamUrl(track.id, this.quality);
+                        streamUrl = await this.api.getStreamUrl(track.id, this.quality, null, playbackSignal);
                     }
                 } else {
                     // Tidal: Get track data for ReplayGain (should be cached by API)
-                    const trackData = await this.api.getTrack(track.id, this.quality);
+                    const trackData = await this.api.getTrack(track.id, this.quality, null, playbackSignal);
                     if (this.playbackSequence !== currentSequence) return;
 
                     if (trackData && trackData.info) {
@@ -863,7 +868,7 @@ export class Player {
                     } else if (trackData.info?.manifest) {
                         streamUrl = this.api.extractStreamUrlFromManifest(trackData.info.manifest);
                     } else {
-                        streamUrl = await this.api.getStreamUrl(track.id, this.quality);
+                        streamUrl = await this.api.getStreamUrl(track.id, this.quality, null, playbackSignal);
                     }
                 }
 
