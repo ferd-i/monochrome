@@ -1,5 +1,5 @@
 # Node Alpine -- multi-arch (amd64 + arm64)
-FROM oven/bun:1.3.10-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -19,13 +19,13 @@ ARG SESSION_MAX_AGE
 COPY package.json package-lock.json ./
 
 # Install dependencies (Node)
-RUN bun install
+RUN npm ci
 
 # Copy the rest of the project
 COPY . .
 
 # Build the project (Bun is now available for "bun x neu build")
-RUN bun run build
+RUN npm run build
 
 # Serve with nginx
 FROM nginx:1.28.2-alpine
