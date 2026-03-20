@@ -304,7 +304,7 @@ export class QobuzAPI {
     }
 
     // Get stream URL for a track
-    async getStreamUrl(trackId, quality = '27') {
+    async getStreamUrl(trackId, quality = '27', signal = null) {
         try {
             const cleanId = trackId.replace(/^q:/, '');
             // Map Tidal quality format to Qobuz quality values
@@ -318,7 +318,8 @@ export class QobuzAPI {
             };
             const qobuzQuality = qualityMap[quality] || quality || '27';
             const data = await this.fetchWithRetry(
-                `/download-music?track_id=${encodeURIComponent(cleanId)}&quality=${qobuzQuality}`
+                `/download-music?track_id=${encodeURIComponent(cleanId)}&quality=${qobuzQuality}`,
+                { signal }
             );
 
             if (!data.success || !data.data?.url) {

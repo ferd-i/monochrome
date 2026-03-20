@@ -1259,12 +1259,12 @@ export class LosslessAPI {
         }
     }
 
-    async getTrack(id, quality = 'HI_RES_LOSSLESS') {
+    async getTrack(id, quality = 'HI_RES_LOSSLESS', signal = null) {
         const cacheKey = `${id}_${quality}`;
         const cached = await this.cache.get('track', cacheKey);
         if (cached) return cached;
 
-        const response = await this.fetchWithRetry(`/track/?id=${id}&quality=${quality}`, { type: 'streaming' });
+        const response = await this.fetchWithRetry(`/track/?id=${id}&quality=${quality}`, { type: 'streaming', signal });
         const jsonResponse = await response.json();
         const result = this.parseTrackLookup(this.normalizeTrackResponse(jsonResponse));
 
@@ -1274,14 +1274,14 @@ export class LosslessAPI {
         return result;
     }
 
-    async getStreamUrl(id, quality = 'HI_RES_LOSSLESS') {
+    async getStreamUrl(id, quality = 'HI_RES_LOSSLESS', signal = null) {
         const cacheKey = `stream_${id}_${quality}`;
 
         if (this.streamCache.has(cacheKey)) {
             return this.streamCache.get(cacheKey);
         }
 
-        const lookup = await this.getTrack(id, quality);
+        const lookup = await this.getTrack(id, quality, signal);
 
         let streamUrl;
         if (lookup.originalTrackUrl) {

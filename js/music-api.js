@@ -54,11 +54,11 @@ export class MusicAPI {
     }
 
     // Get methods
-    async getTrack(id, quality, provider = null) {
+    async getTrack(id, quality, provider = null, signal = null) {
         const p = provider || this.getProviderFromId(id) || this.getCurrentProvider();
         const api = this.getAPI(p);
         const cleanId = this.stripProviderPrefix(id);
-        return api.getTrack(cleanId, quality);
+        return api.getTrack(cleanId, quality, signal);
     }
 
     async getTrackMetadata(id, provider = null) {
@@ -135,11 +135,11 @@ export class MusicAPI {
     }
 
     // Stream methods
-    async getStreamUrl(id, quality, provider = null) {
+    async getStreamUrl(id, quality, provider = null, signal = null) {
         const p = provider || this.getProviderFromId(id) || this.getCurrentProvider();
         const api = this.getAPI(p);
         const cleanId = this.stripProviderPrefix(id);
-        return api.getStreamUrl(cleanId, quality);
+        return api.getStreamUrl(cleanId, quality, signal);
     }
 
     // Cover/artwork methods
