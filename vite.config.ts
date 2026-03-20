@@ -72,15 +72,7 @@ export default defineConfig(({ mode }) => {
                         {
                             urlPattern: ({ request }) =>
                                 request.destination === 'audio' || request.destination === 'video',
-                            handler: 'CacheFirst',
-                            options: {
-                                cacheName: 'media',
-                                expiration: {
-                                    maxEntries: 50,
-                                    maxAgeSeconds: 60 * 24 * 60 * 60, // 60 Days
-                                },
-                                rangeRequests: true, // Support scrubbing
-                            },
+                            handler: 'NetworkOnly',
                         },
                     ],
                 },
